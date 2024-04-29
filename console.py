@@ -73,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is'}'\
+                    if pline[0] is '{' and pline[-1] is '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -137,13 +137,13 @@ class HBNBCommand(cmd.Cmd):
             # Split each parameter into key and value
             key, split, value = param.partition('=')
 
-            # Remove Leading/trailing whitespace and replace undescores with spaces
+            # Remove Leading/trailing whitespace
             key = key.strip()
             value = value.strip().replace('_', ' ')
 
             # Check for string values enclosed in double quotes
             if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1] # Remove the double quotes
+                value = value[1:-1]  # Remove the double quotes
                 # Handel escaping of double quotes with a backslash
                 value = value.replace('\\"', '"')
 
@@ -228,7 +228,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del(storage.all()[key])
+            del (storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -360,6 +360,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
