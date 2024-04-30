@@ -164,7 +164,7 @@ class HBNBCommand(cmd.Cmd):
 
         # Create an instance of the specified class with the given parameters
         new_instance = HBNBCommand.classes[class_name](**kwargs)
-        storage.save()
+        new_instance.save()
         print(new_instance.id)
 
     def help_create(self):
