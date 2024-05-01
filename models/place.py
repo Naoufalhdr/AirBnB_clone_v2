@@ -7,8 +7,13 @@ from sqlalchemy.orm import relationship
 
 # Create a table for the many-to-many relationship between Place and Amenity
 place_amenity = Table('place_amenity', Base.metadata,
-                      Column('place_id', String(60), ForeignKey('places.id'), primary_key=True, nullable=False),
-                      Column('amenity_id', String(60), ForeignKey('amenities.id'), primary_key=True, nullable=False))
+                      Column('place_id', String(60),
+                             ForeignKey('places.id'),
+                             primary_key=True, nullable=False),
+                      Column('amenity_id', String(60),
+                             ForeignKey('amenities.id'),
+                             primary_key=True, nullable=False)
+                      )
 
 
 class Place(BaseModel, Base):
@@ -23,7 +28,8 @@ class Place(BaseModel, Base):
         description (str): A description of the place.
         number_rooms (int): The number of rooms in the place.
         number_bathrooms (int): The number of bathrooms in the place.
-        max_guest (int): The maximum number of guests the place can accommodate.
+        max_guest (int): The maximum number of guests the place can
+        accommodate.
         price_by_night (int): The price per night for the place.
         latitude (float): The latitude coordinate of the place.
         longitude (float): The longitude coordinate of the place.
@@ -41,7 +47,8 @@ class Place(BaseModel, Base):
     latitude = Column(Float)
     longitude = Column(Float)
     reviews = relationship("Review", cascade="all, delete", backref="place")
-    amenities = relationship("Amenity", secondary="place_amenity", viewonly=False)
+    amenities = relationship("Amenity", secondary="place_amenity",
+                             viewonly=False)
 
     @property
     def reviews(self):
