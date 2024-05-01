@@ -4,12 +4,20 @@ import json
 
 
 class FileStorage:
-    """This class manages storage of hbnb models in JSON format"""
+    """This class serializes instances to a JSON file and
+    deserializes JSON file to instances
+    Attributes:
+        __file_path: path to the JSON file
+        __objects: objects will be stored
+    """
     __file_path = 'file.json'
     __objects = {}
 
     def all(self, cls=None):
-        """Returns the list of objects of one type of class"""
+        """returns a dictionary
+        Return:
+            returns a dictionary of __object
+        """
         storage = FileStorage.__objects
         if cls:
             filter_objects = {
@@ -21,11 +29,15 @@ class FileStorage:
             return storage
 
     def new(self, obj):
-        """Adds new object to storage dictionary"""
+        """sets __object to given obj
+        Args:
+            obj: given object
+        """
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
 
     def save(self):
-        """Saves storage dictionary to file"""
+        """serialize the file path to JSON file path
+        """
         with open(FileStorage.__file_path, 'w') as f:
             temp = {}
             temp.update(FileStorage.__objects)
@@ -34,7 +46,8 @@ class FileStorage:
             json.dump(temp, f)
 
     def reload(self):
-        """Loads storage dictionary from file"""
+        """serialize the file path to JSON file path
+        """
         from models.base_model import BaseModel
         from models.user import User
         from models.place import Place
@@ -58,7 +71,8 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        """Delete object from the storage if found"""
+        """Delete object from the storage if found
+        """
         instance = obj.to_dict()['__class__'] + '.' + obj.id
         if obj and instance in self.all():
             del self.__objects[instance]
