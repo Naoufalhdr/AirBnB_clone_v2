@@ -73,6 +73,7 @@ class FileStorage:
     def delete(self, obj=None):
         """Delete object from the storage if found
         """
-        instance = obj.to_dict()['__class__'] + '.' + obj.id
-        if obj and instance in self.all():
-            del self.__objects[instance]
+        if obj:
+            instance = obj.to_dict()['__class__'] + '.' + obj.id
+            if obj and instance in self.all():
+                del self.__objects[instance]
