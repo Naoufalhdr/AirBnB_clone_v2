@@ -24,6 +24,7 @@ def do_deploy(archive_path):
         # Uncompress the archive on the web server
         archive_filename = os.path.basename(archive_path)
         folder_name = f"/data/web_static/releases/{archive_filename[:-4]}"
+        run(f"mkdir -p {folder_name}")
         run(f"tar -xzf /tmp/{archive_filename} -C {folder_name}")
 
         # Delete the archive from the web server
