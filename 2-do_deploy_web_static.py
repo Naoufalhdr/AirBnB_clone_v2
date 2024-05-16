@@ -6,7 +6,7 @@ do_deploy.
 from fabric.api import env, put, run
 import os.path
 
-env.hosts = ['100.26.172.45', '54.236.12.243']
+env.hosts = ['54.157.186.100', '52.86.133.13']
 
 
 def do_deploy(archive_path):
@@ -30,15 +30,17 @@ def do_deploy(archive_path):
         # Delete the archive from the web server
         run(f"rm /tmp/{archive_filename}")
 
+        # Move the contents of the uncompressed folder to its parent dir
         run(f"mv {folder_name}/web_static/* {folder_name}")
 
-        run(f"rm -rf {folder_name}/seb_static")
+        # Remove the now empty web_static dir
+        run(f"rm -rf {folder_name}/web_static")
 
         # Delete the symbolic link /data/web_static/current
         run("rm -rf /data/web_static/current")
 
         # Create a new symbolic link /data/web_static/current
-        run("ln -s {folder_name} /data/web_static/current")
+        run(f"ln -s {folder_name} /data/web_static/current")
 
         print("New version deployed!")
         return True
