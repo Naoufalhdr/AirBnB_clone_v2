@@ -21,9 +21,12 @@ def do_deploy(archive_path):
         # Upload the archive to the web server
         put(archive_path, '/tmp/')
 
+        # Delete the archive if exist
+
         # Uncompress the archive on the web server
         archive_filename = os.path.basename(archive_path)
         folder_name = f"/data/web_static/releases/{archive_filename[:-4]}"
+        run(f"rm -rf {folder_name}")
         run(f"mkdir -p {folder_name}")
         run(f"tar -xzf /tmp/{archive_filename} -C {folder_name}/")
 
