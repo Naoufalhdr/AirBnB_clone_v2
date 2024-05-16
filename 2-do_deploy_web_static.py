@@ -17,37 +17,38 @@ def do_deploy(archive_path):
     if not os.path.exists(archive_path):
         return False
 
-    try:
-        # Upload the archive to the web server
-        put(archive_path, '/tmp/')
+    # Upload the archive to the web server
+    if put(archive_path, '/tmp/').failed is True:
+        return false
 
-        # Delete the archive if exist
-
-        # Uncompress the archive on the web server
-        archive_filename = os.path.basename(archive_path)
-        folder_name = f"/data/web_static/releases/{archive_filename[:-4]}"
-        if os.path.exists(folder_name):
-            run(f"rm -rf {folder_name}")
-        run(f"mkdir -p {folder_name}")
-        run(f"tar -xzf /tmp/{archive_filename} -C {folder_name}/")
-
-        # Delete the archive from the web server
-        run(f"rm /tmp/{archive_filename}")
-
-        # Move the contents of the uncompressed folder to its parent dir
-        run(f"mv {folder_name}/web_static/* {folder_name}/")
-
-        # Remove the now empty web_static dir
-        run(f"rm -rf {folder_name}/web_static")
-
-        # Delete the symbolic link /data/web_static/current
-        run("rm -rf /data/web_static/current")
-
-        # Create a new symbolic link /data/web_static/current
-        run(f"ln -s {folder_name}/ /data/web_static/current")
-
-        print("New version deployed!")
-        return True
-
-    except Exception as e:
+    # Uncompress the archive on the web server
+    archive_filename = os.path.basename(archive_path)
+    folder_name = f"/data/web_static/releases/{archive_filename[:-4]}"
+    if run(f"mkdir -p {folder_name}").failed is True:
         return False
+    if run(f"tar -xzf /tmp/{archive_filename} "
+            "-C {folder_name}/").failed is True:
+        return Fasle
+
+    # Delete the archive from the web server
+    if run(f"rm /tmp/{archive_filename}").failed is True:
+        return False
+
+    # Move the contents of the uncompressed folder to its parent dir
+    if run(f"mv {folder_name}/web_static/* {folder_name}/").failed is True:
+        return False
+
+    # Remove the now empty web_static dir
+    if run(f"rm -rf {folder_name}/web_static").failed is True:
+        return False
+
+    # Delete the symbolic link /data/web_static/current
+    if run("rm -rf /data/web_static/current").failed is True:
+        return False
+
+    # Create a new symbolic link /data/web_static/current
+    if run(f"ln -s {folder_name}/ /data/web_static/current").failed is True:
+        return False
+
+    print("New version deployed!")
+    return True
