@@ -25,7 +25,7 @@ def do_deploy(archive_path):
         archive_filename = os.path.basename(archive_path)
         folder_name = f"/data/web_static/releases/{archive_filename[:-4]}"
         run(f"mkdir -p {folder_name}")
-        run(f"tar -xzf /tmp/{archive_filename} -C {folder_name}")
+        run(f"tar -xzf /tmp/{archive_filename} -C {folder_name}/")
 
         # Delete the archive from the web server
         run(f"rm /tmp/{archive_filename}")
@@ -40,7 +40,7 @@ def do_deploy(archive_path):
         run("rm -rf /data/web_static/current")
 
         # Create a new symbolic link /data/web_static/current
-        run(f"ln -s {folder_name} /data/web_static/current")
+        run(f"ln -s {folder_name}/ /data/web_static/current")
 
         print("New version deployed!")
         return True
