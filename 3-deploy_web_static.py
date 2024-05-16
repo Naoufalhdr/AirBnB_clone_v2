@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """
-Fabric script to create and distribute an archive to web servers using the function deploy.
+Fabric script to create and distribute an archive to web servers using
+the function deploy.
 """
 from fabric.api import env, run, local
 from fabric.operations import put
@@ -13,7 +14,8 @@ env.hosts = ['54.157.186.100', '52.86.133.13']
 def do_pack():
     """
     Create a compressed archive of web_static folder.
-    Returns the path to the created archive, or None if the archive creation fails.
+    Returns the path to the created archive, or None if the archive creation
+    fails.
     """
     try:
         # Create directory if it doesn't exist
@@ -46,7 +48,7 @@ def do_deploy(archive_path):
 
         # Uncompress the archive on the web server
         archive_filename = os.path.basename(archive_path)
-        folder_name = "/data/web_static/releases/{}".format(archive_filename[:-4])
+        folder_name = f"/data/web_static/releases/{archive_filename[:-4]}"
         run("mkdir -p {}".format(folder_name))
         run("tar -xzf /tmp/{} -C {}".format(archive_filename, folder_name))
 
