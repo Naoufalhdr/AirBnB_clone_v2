@@ -42,7 +42,6 @@ def do_deploy(archive_path):
         # Create a new symbolic link /data/web_static/current
         run(f"ln -s {folder_name}/ /data/web_static/current")
 
-        print("New version deployed!")
         return True
 
     except Exception as e:
