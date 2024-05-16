@@ -26,7 +26,8 @@ def do_deploy(archive_path):
         # Uncompress the archive on the web server
         archive_filename = os.path.basename(archive_path)
         folder_name = f"/data/web_static/releases/{archive_filename[:-4]}"
-        run(f"rm -rf {folder_name}")
+        if os.path.exists(folder_name):
+            run(f"rm -rf {folder_name}")
         run(f"mkdir -p {folder_name}")
         run(f"tar -xzf /tmp/{archive_filename} -C {folder_name}/")
 
@@ -34,7 +35,7 @@ def do_deploy(archive_path):
         run(f"rm /tmp/{archive_filename}")
 
         # Move the contents of the uncompressed folder to its parent dir
-        run(f"mv {folder_name}/web_static/* {folder_name}")
+        run(f"mv {folder_name}/web_static/* {folder_name}/")
 
         # Remove the now empty web_static dir
         run(f"rm -rf {folder_name}/web_static")
