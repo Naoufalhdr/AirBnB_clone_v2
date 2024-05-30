@@ -3,6 +3,7 @@
 Start a simple Flask web application with two routes:
     - /: displays "Hello HBNB!"
     - /hbnb : displays "HBNB"
+    - /c/<text> : Displays 'C' followed by the value of the 'text' variable
 """
 from flask import Flask
 
@@ -19,6 +20,12 @@ def hello_hbnb():
 def hbnb():
     """ Displays 'HBNB' """
     return "HBNB"
+
+
+@app.route("/c/<text>", strict_slashes=False)
+def c_text(text):
+    """ Displays 'C' followed by the value of the 'text' variable """
+    return "C " + text.replace('_', ' ')
 
 
 if __name__ == "__main__":
