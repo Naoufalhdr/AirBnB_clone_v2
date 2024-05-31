@@ -12,7 +12,6 @@ Start a simple Flask web application with two routes:
     - /number_odd_or_even/<n>: Displays an HTML page only if n is an integer
                                with an H1 tag "Number: n is even|odd" inside
                                the BODY
-
 """
 from flask import Flask, render_template
 
