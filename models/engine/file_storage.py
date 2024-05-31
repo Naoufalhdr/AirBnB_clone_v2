@@ -77,3 +77,7 @@ class FileStorage:
             instance = obj.to_dict()['__class__'] + '.' + obj.id
             if obj and instance in self.all():
                 del self.__objects[instance]
+
+    def close(self):
+        """ call reload method for deserializing the JSON file to objects """
+        self.reload()
