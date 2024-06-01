@@ -34,6 +34,8 @@ class DBStorage:
 
     def all(self, cls=None):
         """ Query all objects from the current database session """
+        from models import base_model
+
         obj_dict = {}
         if cls:
             objs = self.__session.query(cls).all()
@@ -41,7 +43,7 @@ class DBStorage:
                 key = "{}.{}".format(obj.__class__.__name__, obj.id)
                 obj_dict[key] = obj
         else:
-            for class_name in Base.__subclasses__():
+            for class_name in base_model.Base.__subclasses__():
                 objs = self.__session.query(class_name).all()
                 for obj in objs:
                     key = "{}.{}".format(obj.__class__.__name__, obj.id)
