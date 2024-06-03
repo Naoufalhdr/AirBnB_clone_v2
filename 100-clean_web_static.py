@@ -1,39 +1,30 @@
 #!/usr/bin/python3
-"""
-Fabric script to delete out-of-date archives using the function do_clean.
-"""
-from fabric.api import env, run, local
+# Fabfile to delete out-of-date archives.
 import os
+from fabric.api import *
 
-env.hosts = ["54.157.186.100", "52.86.133.13"]
+env.hosts = ["104.196.168.90", "35.196.46.172"]
 
 
 def do_clean(number=0):
+    """Delete out-of-date archives.
+
+    Args:
+        number (int): The number of archives to keep.
+
+    If number is 0 or 1, keeps only the most recent archive. If
+    number is 2, keeps the most and second-most recent archives,
+    etc.
     """
-    Delete out-of-date archives.
-    """
-    try:
-        # Ensure number is an integer
-        number = int(number)
+    number = 1 if int(number) == 0 else int(number)
 
-        # Get list of archives sorted by modification time (oldest first)
-        archives = sorted(
-                os.listdir("versions"),
-                key=lambda x: os.path.getmtime(f"versions/{x}")
-                )
+    archives = sorted(os.listdir("versions"))
+    [archives.pop() for i in range(number)]
+    with lcd("versions"):
+        [local("rm ./{}".format(a)) for a in archives]
 
-        # Determine number of archives to keep
-        num_to_keep = max(number, 1)
-
-        # Delete unnecessary archives in versions folder
-        for archive in archives[:-num_to_keep]:
-            local(f"rm -f versions/{archive}")
-
-        # Delete unnecessary archives on the web servers
-        for archive in archives[:-num_to_keep]:
-            run(f"rm -f /data/web_static/releases/{archive[:-4]}.tgz")
-
-        return True
-
-    except Exception as e:
-        return False
+    with cd("/data/web_static/releases"):
+        archives = run("ls -tr").split()
+        archives = [a for a in archives if "web_static_" in a]
+        [archives.pop() for i in range(number)]
+        [run("rm -rf ./{}".format(a)) for a in archives]

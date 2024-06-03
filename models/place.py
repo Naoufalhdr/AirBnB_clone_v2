@@ -1,39 +1,38 @@
 #!/usr/bin/python3
-""" Place Module for HBNB project """
+"""This is the place class"""
+from sqlalchemy.ext.declarative import declarative_base
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
+from sqlalchemy import Column, Table, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
+from os import getenv
+import models
 
 
-# Create a table for the many-to-many relationship between Place and Amenity
-place_amenity = Table('place_amenity', Base.metadata,
-                      Column('place_id', String(60),
-                             ForeignKey('places.id'),
-                             primary_key=True, nullable=False),
-                      Column('amenity_id', String(60),
-                             ForeignKey('amenities.id'),
-                             primary_key=True, nullable=False)
-                      )
+place_amenity = Table("place_amenity", Base.metadata,
+                      Column("place_id", String(60),
+                             ForeignKey("places.id"),
+                             primary_key=True,
+                             nullable=False),
+                      Column("amenity_id", String(60),
+                             ForeignKey("amenities.id"),
+                             primary_key=True,
+                             nullable=False))
 
 
 class Place(BaseModel, Base):
-    """
-    Place class represents a place to stay.
-
+    """This is the class for Place
     Attributes:
-        __tablename__ (str): The name of the table in the database.
-        city_id (str): The ID of the city where the place is located.
-        user_id (str): The ID of the user who owns the place.
-        name (str): The name of the place.
-        description (str): A description of the place.
-        number_rooms (int): The number of rooms in the place.
-        number_bathrooms (int): The number of bathrooms in the place.
-        max_guest (int): The maximum number of guests the place can
-        accommodate.
-        price_by_night (int): The price per night for the place.
-        latitude (float): The latitude coordinate of the place.
-        longitude (float): The longitude coordinate of the place.
-        reviews (relationship): Relationship to the Review class.
+        city_id: city id
+        user_id: user id
+        name: name input
+        description: string of description
+        number_rooms: number of room in int
+        number_bathrooms: number of bathrooms in int
+        max_guest: maximum guest in int
+        price_by_night:: pice for a staying in int
+        latitude: latitude in flaot
+        longitude: longitude in float
+        amenity_ids: list of Amenity ids
     """
     __tablename__ = "places"
     city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
@@ -46,22 +45,39 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, nullable=False, default=0)
     latitude = Column(Float)
     longitude = Column(Float)
-    reviews = relationship("Review", cascade="all, delete", backref="place")
-    amenities = relationship("Amenity", secondary="place_amenity",
-                             viewonly=False)
+    amenity_ids = []
 
-    @property
-    def reviews(self):
-        """
-        Getter attribute for retrieving reviews associated with the place.
+    if getenv("HBNB_TYPE_STORAGE") == "db":
+        reviews = relationship("Review", cascade='all, delete, delete-orphan',
+                               backref="place")
 
-        Returns:
-            list: List of Review instances associated with the place.
-        """
-        from models import storage
-        reviews = []
-        all_reviews = storage.all(Review)
-        for review in all_reviews.values():
-            if review.place_id == self.id:
-                reviews.append(review)
-        return reviews
+        amenities = relationship("Amenity", secondary=place_amenity,
+                                 viewonly=False,
+                                 back_populates="place_amenities")
+    else:
+        @property
+        def reviews(self):
+            """ Returns list of reviews.id """
+            var = models.storage.all()
+            lista = []
+            result = []
+            for key in var:
+                review = key.replace('.', ' ')
+                review = shlex.split(review)
+                if (review[0] == 'Review'):
+                    lista.append(var[key])
+            for elem in lista:
+                if (elem.place_id == self.id):
+                    result.append(elem)
+            return (result)
+
+        @property
+        def amenities(self):
+            """ Returns list of amenity ids """
+            return self.amenity_ids
+
+        @amenities.setter
+        def amenities(self, obj=None):
+            """ Appends amenity ids to the attribute """
+            if type(obj) is Amenity and obj.id not in self.amenity_ids:
+                self.amenity_ids.append(obj.id)

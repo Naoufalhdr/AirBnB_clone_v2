@@ -1,21 +1,16 @@
 #!/usr/bin/python3
-""" State Module for HBNB project """
+"""This is the amenity class"""
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String
+from models.place import place_amenity
 
 
 class Amenity(BaseModel, Base):
-    """
-    Amenity class represents amenities available in a place.
-
+    """This is the class for Amenity
     Attributes:
-        __tablename__ (str): The name of the table in the database.
-        name (str): The name of the amenity.
-        place_amenities (relationship): Relationship to the Place class.
+        name: input name
     """
     __tablename__ = "amenities"
-
     name = Column(String(128), nullable=False)
-    place_amenities = relationship("Place", secondary="place_amenity",
-                                   overlaps="amenities")
+    place_amenities = relationship("Place", secondary=place_amenity)

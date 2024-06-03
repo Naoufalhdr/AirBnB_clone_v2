@@ -80,7 +80,6 @@ class HBNBCommand(cmd.Cmd):
                         _args = pline.replace(',', '')
                         # _args = _args.replace('\"', '')
             line = ' '.join([_cmd, _cls, _id, _args])
-            print(line)
 
         except Exception as mess:
             pass
@@ -116,54 +115,22 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        if not args:
+        try:
+            if not args:
+                raise SyntaxError()
+            arg_list = args.split(" ")
+            kw = {}
+            for arg in arg_list[1:]:
+                arg_splited = arg.split("=")
+                arg_splited[1] = eval(arg_splited[1])
+                if type(arg_splited[1]) is str:
+                    arg_splited[1] = arg_splited[1].replace("_", " ").replace('"', '\\"')
+                kw[arg_splited[0]] = arg_splited[1]
+        except SyntaxError:
             print("** class name missing **")
-            return
-
-        # Split the arguments into class name and parameters
-        arg_list = args.split(' ')
-        class_name = arg_list[0]
-
-        # Check if the class name is valid
-        if class_name not in HBNBCommand.classes:
+        except NameError:
             print("** class doesn't exist **")
-            return
-
-        # Create a dictionary to store the parameters
-        kwargs = {}
-
-        # Parse the parameters
-        for param in arg_list[1:]:
-            # Split each parameter into key and value
-            key, split, value = param.partition('=')
-
-            # Remove Leading/trailing whitespace
-            key = key.strip()
-            value = value.strip().replace('_', ' ')
-
-            # Check for string values enclosed in double quotes
-            if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1]  # Remove the double quotes
-                # Handel escaping of double quotes with a backslash
-                value = value.replace('\\"', '"')
-
-            # Convert float values containing a dot
-            elif '.' in value:
-                try:
-                    value = float(value)
-                except ValueError:
-                    continue
-
-            # Convert integer values
-            else:
-                try:
-                    value = int(value)
-                except ValueError:
-                    continue
-            kwargs[key] = value
-
-        # Create an instance of the specified class with the given parameters
-        new_instance = HBNBCommand.classes[class_name](**kwargs)
+        new_instance = HBNBCommand.classes[arg_list[0]](**kw)
         new_instance.save()
         print(new_instance.id)
 
@@ -228,7 +195,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del (storage.all()[key])
+            del(storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -252,7 +219,6 @@ class HBNBCommand(cmd.Cmd):
         else:
             for k, v in storage.all().items():
                 print_list.append(str(v))
-
         print(print_list)
 
     def help_all(self):
@@ -359,7 +325,6 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
-
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
